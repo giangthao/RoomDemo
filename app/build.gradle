@@ -37,7 +37,7 @@ android {
 
 
 dependencies {
-    def room_version = "2.2.3" // be sure to have the latest version of room
+    def room_version = "2.4.0" // be sure to have the latest version of room
     def activityVersion = '1.3.1'
     def lifecycle_version = "2.4.0-beta01"
     // Room and Lifecycle dependencies
