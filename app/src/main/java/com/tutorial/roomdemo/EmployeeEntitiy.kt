@@ -1,5 +1,7 @@
 package com.tutorial.roomdemo
 
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -7,10 +9,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "employee-table")
 data class EmployeeEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val name: String = "",
+    var id: Int = 0,
+    var name: String = "",
     @ColumnInfo(name="email-id")
-    val email: String = "",
-
-
+    var email: String = "",
 )
