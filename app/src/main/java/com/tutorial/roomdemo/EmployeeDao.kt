@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EmployeeDao {
-    fun addsome()
     @Insert
     suspend fun  insert(employeeEntity: EmployeeEntity)
 
