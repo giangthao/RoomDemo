@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
  * A database that stores employee information.
  * And a global method to get access to the database.
  */
-@Database(entities = [EmployeeEntity::class], version = 1)
+@Database(entities = [EmployeeEntity::class], version = 2)
 abstract class EmployeeDataBase: RoomDatabase() {
     /**
      * Connects the database to the DAO.
