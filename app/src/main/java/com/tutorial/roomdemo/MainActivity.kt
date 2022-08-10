@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tutorial.roomdemo.databinding.ActivityMainBinding
@@ -54,7 +56,13 @@ class MainActivity : AppCompatActivity() {
                                                 employeeDao: EmployeeDao) {
 
         if (employeesList.isNotEmpty()) {
-            val itemAdapter = ItemAdapter(employeesList)
+            val itemAdapter = ItemAdapter(employeesList,
+                {
+                    updateRecordDialog(it, employeeDao)
+                },
+                {
+                    deleteRecordAlertDialog(it, employeeDao)
+                })
 
 
             // Set the LayoutManager that this RecyclerView will use.
@@ -68,5 +76,48 @@ class MainActivity : AppCompatActivity() {
             binding?.rvItemsList?.visibility = View.GONE
             binding?.tvNoRecordsAvailable?.visibility = View.VISIBLE
         }
+    }
+
+    private fun deleteRecordAlertDialog(it: Int, employeeDao: EmployeeDao) {
+        val dialog =AlertDialog.Builder(this)
+        //set title for alert Dialog
+        dialog.setTitle("Delete Record")
+        // set message for alert Dialog
+        lifecycleScope.launch{
+            employeeDao.fetchEmployeesId(it).collect{
+                if(it!=null){
+                    dialog.setMessage("Are you sure you wants to delete ${it.name}")
+                }
+            }
+        }
+        dialog.setIcon(android.R.drawable.ic_dialog_alert)
+        //performing positive action
+        dialog.setPositiveButton("Yes"){
+            dialogInterface, _->
+            lifecycleScope.launch{
+                //calling the deleteEmployee method of Database Handler class to delete record
+                employeeDao.delete(EmployeeEntity(it))
+                Toast.makeText(
+                    applicationContext,
+                    "Record deleted successfully.",
+                    Toast.LENGTH_LONG
+                ).show()
+                dialogInterface.dismiss()
+            }
+        }
+            //performing negative action
+        dialog.setNegativeButton("No"){
+            dialogInterface, which -> dialogInterface.dismiss()
+        }
+        //Create the AlertDialog
+        val alertDialog:AlertDialog = dialog.create()
+        // Set other dialog properties
+        alertDialog.setCancelable(false) // Will not allow user to cancel after clicking on remaining screen area.
+        alertDialog.show() // show the dialog to UI
+
+    }
+
+    private fun updateRecordDialog(it: Int, employeeDao: EmployeeDao) {
+
     }
 }

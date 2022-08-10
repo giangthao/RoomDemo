@@ -73,7 +73,7 @@ class ItemAdapter(private val items: ArrayList<EmployeeEntity>,
             updateListener.invoke(item.id)
         }
         holder.ivDelete.setOnClickListener {
-            updateListener.invoke(item.id   )
+            deleteListener.invoke(item.id   )
         }
 
     }
