@@ -1,15 +1,17 @@
 package com.tutorial.roomdemo
 
+import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.R
 import androidx.appcompat.app.AlertDialog
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tutorial.roomdemo.databinding.ActivityMainBinding
+import com.tutorial.roomdemo.databinding.DialogUpdateBinding
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -58,10 +60,18 @@ class MainActivity : AppCompatActivity() {
         if (employeesList.isNotEmpty()) {
             val itemAdapter = ItemAdapter(employeesList,
                 {
-                    updateRecordDialog(it, employeeDao)
+                    updateId ->
+                    updateRecordDialog(updateId, employeeDao)
                 },
                 {
-                    deleteRecordAlertDialog(it, employeeDao)
+                    deleteId ->
+                    lifecycleScope.launch {
+                        employeeDao.fetchEmployeesId(deleteId).collect {
+                            if (it != null) {
+                                deleteRecordAlertDialog(deleteId, employeeDao,it)
+                            }
+                        }
+                    }
                 })
 
 
@@ -77,8 +87,13 @@ class MainActivity : AppCompatActivity() {
             binding?.tvNoRecordsAvailable?.visibility = View.VISIBLE
         }
     }
+    /** Todo 6
+     * Method is used to show the Alert Dialog and delete the selected employee.
+     * We add an id to get the selected position and an employeeDao param to get the
+     * methods from the dao interface then launch a coroutine block to call the methods
+     */
 
-    private fun deleteRecordAlertDialog(it: Int, employeeDao: EmployeeDao) {
+    private fun deleteRecordAlertDialog(it: Int, employeeDao: EmployeeDao, employeeEntity: EmployeeEntity) {
         val dialog =AlertDialog.Builder(this)
         //set title for alert Dialog
         dialog.setTitle("Delete Record")
@@ -117,7 +132,45 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun updateRecordDialog(it: Int, employeeDao: EmployeeDao) {
+    private fun updateRecordDialog(id: Int, employeeDao: EmployeeDao) {
+        val dialog = Dialog(this, R.style.Theme_AppCompat_Dialog)
+        // Will not allow user to cancel after click remaining screen
+        dialog.setCancelable(false)
+        /*Set the screen content from a layout resource.
+        * The resource will be inflated, adding all top-level views to the screen
+        * */
+        val binding = DialogUpdateBinding.inflate(layoutInflater)
+        dialog.setContentView(binding.root)
+        lifecycleScope.launch {
+            employeeDao.fetchEmployeesId(id).collect(){
+                if (it!=null){
+                    binding.etUpdateName.setText(it.name)
+                    binding.etUpdateEmailId.setText(it.email)
+                }
+            }
+        }
+        binding.tvUpdate.setOnClickListener {
+            val name = binding.etUpdateName.text.toString()
+            val email = binding.etUpdateEmailId.text.toString()
+            if(name.isNotEmpty() && email.isNotEmpty()){
+                lifecycleScope.launch{
+                    employeeDao.update(EmployeeEntity(id,name,email))
+                    Toast.makeText(applicationContext,"Recored Updated",Toast.LENGTH_LONG).show()
+                    dialog.dismiss()
+                }
+
+            }
+            else {
+                Toast.makeText(applicationContext,
+                "Name or Email cannot be blank",
+                Toast.LENGTH_LONG
+                    )
+            }
+        }
+        binding.tvCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.show()
 
     }
 }
