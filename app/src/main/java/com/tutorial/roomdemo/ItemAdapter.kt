@@ -11,9 +11,9 @@ import com.tutorial.roomdemo.databinding.ItemsRowsBinding
  * The @param [deleteListener] to listen to the delete icon and get the positions id
  **/
 
-class ItemAdapter(private val items: ArrayList<EmployeeEntity>
-                   /* private val updateListener:(id: Int) -> Unit,
-                  private val deleteListener:(id: Int) -> Unit*/
+class ItemAdapter(private val items: ArrayList<EmployeeEntity>,
+                    private val updateListener:(id: Int) -> Unit,
+                  private val deleteListener:(id: Int) -> Unit
 
 ): RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 
@@ -69,12 +69,12 @@ class ItemAdapter(private val items: ArrayList<EmployeeEntity>
                 )
             )
         }
-        /*holder.tvEdit.setOnClickListener{
+        holder.tvEdit.setOnClickListener{
             updateListener.invoke(item.id)
         }
         holder.ivDelete.setOnClickListener {
             updateListener.invoke(item.id   )
-        }*/
+        }
 
     }
     /**
