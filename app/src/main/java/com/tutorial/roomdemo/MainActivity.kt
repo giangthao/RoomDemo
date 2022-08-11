@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateRecordDialog(id: Int, employeeDao: EmployeeDao) {
-        val dialog = Dialog(this, R.style.Theme_AppCompat_Dialog)
+        val dialog = Dialog(this, R.style.Theme_AppCompat_Dialog_Alert)
         // Will not allow user to cancel after click remaining screen
         dialog.setCancelable(false)
         /*Set the screen content from a layout resource.
@@ -143,10 +143,8 @@ class MainActivity : AppCompatActivity() {
         dialog.setContentView(binding.root)
         lifecycleScope.launch {
             employeeDao.fetchEmployeesId(id).collect(){
-                if (it!=null){
-                    binding.etUpdateName.setText(it.name)
-                    binding.etUpdateEmailId.setText(it.email)
-                }
+                binding.etUpdateName.setText(it.name)
+                binding.etUpdateEmailId.setText(it.email)
             }
         }
         binding.tvUpdate.setOnClickListener {
@@ -164,7 +162,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext,
                 "Name or Email cannot be blank",
                 Toast.LENGTH_LONG
-                    )
+                    ).show()
             }
         }
         binding.tvCancel.setOnClickListener {
